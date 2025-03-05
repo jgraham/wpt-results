@@ -367,7 +367,7 @@ class ResultsRepo:
             blob_data = json.dumps(result.to_dict(), indent=1).encode()
             blobs[self.test_path(test_id)] = self.repo.create_blob(blob_data)
         tree_oid, count = insert_blobs(self.repo, None, blobs)
-        commit = self.repo.create_commit(
+        self.repo.create_commit(
             results_ref,
             GIT_AUTHOR,
             GIT_AUTHOR,
@@ -633,7 +633,7 @@ def get_parser() -> argparse.ArgumentParser:
         help="Gecko branch to read from",
     )
     parser.add_argument("--commit", help="Commit to import")
-    parser.add_argument("--log-path", default="None", help="Path to store logs")
+    parser.add_argument("--log-path", default=None, help="Path to store logs")
     parser.add_argument("--list", action="store_true", help="List stored commits")
     parser.add_argument(
         "--backfill",
