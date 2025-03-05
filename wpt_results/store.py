@@ -541,11 +541,11 @@ def add_commit(
             results_repo.add_run(branch, commit, date, run_name, download_paths)
 
 
-def get_last_stored_date(results_repo: ResultsRepo, branch: str) -> datetime:
-    return max(
-        datetime.strptime(date, "%Y-%m-%d")
-        for date in results_repo.get_stored_commits(branch).keys()
-    )
+def get_last_stored_date(results_repo: ResultsRepo, branch: str) -> Optional[datetime]:
+    stored_dates = results_repo.get_stored_commits(branch).keys()
+    if not stored_dates:
+        return None
+    return max(datetime.strptime(date, "%Y-%m-%d") for date in stored_dates)
 
 
 def list_stored(results_repo: ResultsRepo, branch: str) -> None:
@@ -561,6 +561,9 @@ def get_backfill_commits(
 ) -> Iterable[tuple[str, Mapping[str, Any]]]:
     if backfill == "new":
         start_date = get_last_stored_date(results_repo, branch)
+        if start_date is None:
+            logging.warning("--backfill=new with empty repository, defaulting to yesterday")
+            start_date = datetime.now() - timedelta(days=1)
     else:
         try:
             start_date = datetime.strptime(backfill, "%Y-%m-%d")
