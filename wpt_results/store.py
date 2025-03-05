@@ -251,7 +251,7 @@ class ResultsRepo:
                     )
                 for commit in commits:
                     assert commit.name is not None
-                    if not isinstance(commits, pygit2.Blob):
+                    if not isinstance(commit, pygit2.Blob):
                         raise ValueError(
                             f"Expected {self.index_ref}:runs/{branch}/{date_obj.name}/revision/{commit.name} to be a blob"
                         )
