@@ -1,6 +1,7 @@
 import argparse
 import contextlib
 import hashlib
+import io
 import json
 import logging
 import os
@@ -10,8 +11,11 @@ import urllib
 from datetime import datetime, timedelta, date as Date
 from typing import (
     Any,
+    BinaryIO,
+    Callable,
     ContextManager,
     Generator,
+    IO,
     Iterable,
     Iterator,
     Mapping,
@@ -25,7 +29,7 @@ from typing import (
 import httpx
 import pygit2
 import tcfetch
-
+import zstandard as zstd
 from pygit2.enums import FileMode
 
 
@@ -320,7 +324,11 @@ class ResultsRepo:
     ) -> Optional[tuple[dict[str, Any], RunResults]]:
         results = RunResults()
         for path in wpt_report_paths:
-            with open(path) as f:
+            if os.path.splitext(path) == ".zstd":
+                open_fn = cast(Callable[[str, str], ContextManager[BinaryIO]], zstd.open)
+            else:
+                open_fn = cast(Callable[[str, str], ContextManager[BinaryIO]], open)
+            with open_fn(path, "rb") as f:
                 try:
                     data = json.load(f)
                 except Exception:
