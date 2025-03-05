@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "webcompat-results"
+description = "Store wpt results in Git"
+authors = [
+  {name = "Mozilla Corporation"}
+]
+version = "0.1.0"
+classifiers = [
+    "License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+]
+dependencies = [
+    "pygit2==1.17.0",
+    "httpx==0.28.1",
+    "tcfetch @ file:///home/jgraham/develop/fetchlogs/python"
+]
+
+[project.optional-dependencies]
+test = [
+  "mypy==1.10.0",
+]
+
+[project.scripts]
+wpt-store-results = "wpt_results:store.main"
+
+[tool.mypy]
+disallow_untyped_defs = true
+
+[tool.setuptools]
+packages = ["wpt_results"]
+
+[tool.pytest]
+testpaths = ["tests"]

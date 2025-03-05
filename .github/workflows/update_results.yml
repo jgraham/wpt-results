@@ -1,0 +1,30 @@
+name: Update interop-scores
+on:
+  push:
+    branches:
+      - main
+  # Trigger every three hours, or manually.
+  schedule:
+    - cron: '20 */3 * * *'
+  workflow_dispatch:
+jobs:
+  update-gh-pages:
+    runs-on: ubuntu-22.04
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: actions/cache@v4
+      with:
+        path: wpt-results
+        key: cache-repos
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v5
+
+    - name: Set up Python
+      run: uv python install
+
+    - name: "Update Interop scores"
+      run: "./ci/update-scores.sh"
+      env:
+        GITHUB_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
