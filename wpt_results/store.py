@@ -534,7 +534,7 @@ def add_commit(
 
     with download_context as path:
         fetch_results = tcfetch.download_artifacts(
-            branch, commit, "wptreport.json", out_dir=path
+            branch, commit, "wptreport.json", out_dir=path, compress=True
         )
         task_runs = get_task_runs(fetch_results)
         for run_name, download_paths in task_runs.items():
