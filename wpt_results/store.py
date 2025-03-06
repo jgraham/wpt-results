@@ -1,7 +1,6 @@
 import argparse
 import contextlib
 import hashlib
-import json
 import logging
 import os
 import re
@@ -25,6 +24,7 @@ from typing import (
 )
 
 import httpx
+import orjson
 import pygit2
 import tcfetch
 import zstandard as zstd
@@ -270,7 +270,7 @@ class ResultsRepo:
                 return None
             if not isinstance(index_blob, pygit2.Blob):
                 raise ValueError(f"Index path {path} expected a blob")
-            return json.loads(index_blob.data)
+            return orjson.loads(index_blob.data)
         return None
 
     def has_commit(self, branch: str, date: Date | datetime, commit: str) -> bool:
@@ -306,7 +306,7 @@ class ResultsRepo:
         run_name: str,
         wpt_report_paths: list[str],
     ) -> None:
-        logging.info(f"Adding {revision} {run_name}")
+        logging.info(f"Adding commit {revision} run {run_name}")
         results_data = self._read_results(wpt_report_paths)
         if results_data is None:
             logging.warning(f"No results data found for {revision} {run_name}")
@@ -328,7 +328,7 @@ class ResultsRepo:
                 open_fn = cast(Callable[[str, str], ContextManager[BinaryIO]], open)
             with open_fn(path, "rb") as f:
                 try:
-                    data = json.load(f)
+                    data = orjson.loads(f.read())
                 except Exception as e:
                     f.seek(0)
                     if len(f.read()) == 0:
@@ -366,7 +366,7 @@ class ResultsRepo:
 
         blobs = {}
         for test_id, result in results:
-            blob_data = json.dumps(result.to_dict(), indent=1).encode()
+            blob_data = orjson.dumps(result.to_dict(), option=orjson.OPT_INDENT_2)
             blobs[self.test_path(test_id)] = self.repo.create_blob(blob_data)
         tree_oid, count = insert_blobs(self.repo, None, blobs)
         self.repo.create_commit(
@@ -402,7 +402,7 @@ class ResultsRepo:
             if current_index is not None:
                 if not isinstance(current_index, pygit2.Blob):
                     raise ValueError(f"Path {path} is not a blob")
-                data = json.loads(current_index.data)
+                data = orjson.loads(current_index.data)
                 if "push_date" not in data or "runs" not in data:
                     data = None
 
@@ -411,7 +411,7 @@ class ResultsRepo:
 
         data["runs"][run_name] = {"id": run_id, "run_info": run_info}
 
-        blobs = {path: self.repo.create_blob(json.dumps(data, indent=1).encode())}
+        blobs = {path: self.repo.create_blob(orjson.dumps(data, option=orjson.OPT_INDENT_2))}
         tree_oid, count = insert_blobs(self.repo, index_tree, blobs)
 
         self.repo.create_commit(
