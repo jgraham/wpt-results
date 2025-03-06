@@ -1,7 +1,6 @@
 import argparse
 import contextlib
 import hashlib
-import io
 import json
 import logging
 import os
@@ -15,7 +14,6 @@ from typing import (
     Callable,
     ContextManager,
     Generator,
-    IO,
     Iterable,
     Iterator,
     Mapping,
@@ -324,15 +322,19 @@ class ResultsRepo:
     ) -> Optional[tuple[dict[str, Any], RunResults]]:
         results = RunResults()
         for path in wpt_report_paths:
-            if os.path.splitext(path) == ".zstd":
+            if os.path.splitext(path)[1] == ".zstd":
                 open_fn = cast(Callable[[str, str], ContextManager[BinaryIO]], zstd.open)
             else:
                 open_fn = cast(Callable[[str, str], ContextManager[BinaryIO]], open)
             with open_fn(path, "rb") as f:
                 try:
                     data = json.load(f)
-                except Exception:
-                    logging.warning(f"Error reading results data from {path}")
+                except Exception as e:
+                    f.seek(0)
+                    if len(f.read()) == 0:
+                        logging.warning(f"Error reading results data from {path}: file was empty")
+                    else:
+                        logging.warning(f"Error reading results data from {path}: {e}")
                     continue
             report_run_info = data["run_info"]
             if run_info is None:
