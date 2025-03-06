@@ -1,4 +1,4 @@
-name: Update interop-scores
+name: Update results cache
 on:
   push:
     branches:
@@ -25,6 +25,6 @@ jobs:
       run: uv python install
 
     - name: "Update Interop scores"
-      run: "./ci/update-scores.sh"
+      run: "./ci/update.sh"
       env:
         GITHUB_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
