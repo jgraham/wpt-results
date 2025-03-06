@@ -15,9 +15,9 @@ classifiers = [
     "Programming Language :: Python :: Implementation :: PyPy",
 ]
 dependencies = [
-    "pygit2==1.17.0",
     "httpx==0.28.1",
-    "tcfetch @ file:///home/jgraham/develop/fetchlogs/python",
+    "pygit2==1.17.0",
+    "tcfetch==0.5.1",
     "zstandard==0.23.0",
 ]
 
