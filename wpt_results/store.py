@@ -644,7 +644,7 @@ def get_parser() -> argparse.ArgumentParser:
         help="Logging level",
     )
     parser.add_argument(
-        "--git-repo", default="./data", help="Path to the output git repository"
+        "--git-repo", default="./gecko-results-cache.git", help="Path to the output git repository"
     )
     parser.add_argument(
         "--branch",
