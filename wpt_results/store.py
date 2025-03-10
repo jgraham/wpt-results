@@ -5,6 +5,7 @@ import logging
 import os
 import re
 import tempfile
+import time
 import urllib
 from datetime import datetime, timedelta, date as Date
 from typing import (
@@ -435,7 +436,20 @@ def get_pushlog(
         start_date = date.strftime("%Y-%m-%d")
         end_date = (date + timedelta(days=1)).strftime("%Y-%m-%d")
         url += f"&startdate={start_date}&enddate={end_date}"
-    resp = httpx.get(url)
+    count = 0
+    while count < 5:
+        try:
+            resp = httpx.get(url)
+        except httpx.ReadTimeout:
+            wait_time = 2**(count + 1)
+            logging.warning(f"Request timed out, waiting {wait_time}s")
+            if count < 5:
+                time.sleep(wait_time)
+            else:
+                raise
+        else:
+            break
+        count += 1
     resp.raise_for_status()
 
     data = resp.json()
