@@ -549,9 +549,13 @@ def add_commit(
         download_context = PathWrapper(log_path)
 
     with download_context as path:
-        fetch_results = tcfetch.download_artifacts(
-            branch, commit, "wptreport.json", out_dir=path, compress=True
-        )
+        try:
+            fetch_results = tcfetch.download_artifacts(
+                branch, commit, "wptreport.json", out_dir=path, compress=True
+            )
+        except OSError as e:
+            logging.error(f"Downloading artifacts failed for {branch}, {commit}:\n{e}")
+            return
         task_runs = get_task_runs(fetch_results)
         for run_name, download_paths in task_runs.items():
             results_repo.add_run(branch, commit, date, run_name, download_paths)
