@@ -323,7 +323,8 @@ class ResultsRepo:
     ) -> Optional[tuple[dict[str, Any], RunResults]]:
         results = RunResults()
         for path in wpt_report_paths:
-            if os.path.splitext(path)[1] == ".zstd":
+            compressed = os.path.splitext(path)[1] == ".zstd"
+            if compressed:
                 open_fn = cast(Callable[[str, str], ContextManager[BinaryIO]], zstd.open)
             else:
                 open_fn = cast(Callable[[str, str], ContextManager[BinaryIO]], open)
@@ -331,8 +332,7 @@ class ResultsRepo:
                 try:
                     data = orjson.loads(f.read())
                 except Exception as e:
-                    f.seek(0)
-                    if len(f.read()) == 0:
+                    if os.stat(path).st_size == 0:
                         logging.warning(f"Error reading results data from {path}: file was empty")
                     else:
                         logging.warning(f"Error reading results data from {path}: {e}")
