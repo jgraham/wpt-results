@@ -586,22 +586,32 @@ def get_backfill_commits(
             logging.warning("--backfill=new with empty repository, defaulting to yesterday")
             start_date = datetime.now() - timedelta(days=1)
     else:
+        if ":" in backfill:
+            start_str, end_str = backfill.split(":", 1)
+        else:
+            start_str = backfill
+            end_str = None
+        end_date = None
         try:
-            start_date = datetime.strptime(backfill, "%Y-%m-%d")
+            start_date = datetime.strptime(start_str, "%Y-%m-%d")
+            if end_str is not None:
+                end_date = datetime.strptime(end_str, "%Y-%m-%d").date()
         except ValueError:
             raise ValueError(
-                "--backfill argument must be in format YYYY-MM-DD or 'new'"
+                "--backfill argument must be in format YYYY-MM-DD, YYYY-MM-DD:YYYY-MM-DD or 'new'"
             )
 
     date = start_date.date()
     today = datetime.now().date()
-    if date > today:
+    if end_date is None:
+        end_date = today
+    if date > end_date:
         raise ValueError("--backfill argument must be a date in the past")
-    if today - date > timedelta(days=100):
+    if end_date - date > timedelta(days=100):
         raise ValueError("can't backfill more than 100 days of data")
 
     commits = []
-    while date <= today:
+    while date <= end_date:
         logging.info(f"Getting commits for {date}")
         pushlog = get_pushlog(branch, date=date)
         for push, push_data in pushlog["pushes"].items():
