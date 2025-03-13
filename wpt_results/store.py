@@ -580,6 +580,8 @@ def list_stored(results_repo: ResultsRepo, branch: str) -> None:
 def get_backfill_commits(
     results_repo: ResultsRepo, backfill: str, branch: str
 ) -> Iterable[tuple[str, Mapping[str, Any]]]:
+    end_date = None
+
     if backfill == "new":
         start_date = get_last_stored_date(results_repo, branch)
         if start_date is None:
@@ -591,7 +593,6 @@ def get_backfill_commits(
         else:
             start_str = backfill
             end_str = None
-        end_date = None
         try:
             start_date = datetime.strptime(start_str, "%Y-%m-%d")
             if end_str is not None:
