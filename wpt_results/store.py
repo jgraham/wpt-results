@@ -411,6 +411,7 @@ class ResultsRepo:
             data = {"push_date": date.isoformat(), "runs": {}}
 
         data["runs"][run_name] = {"id": run_id, "run_info": run_info}
+        data["runs"] = dict(sorted(data["runs"].items()))
 
         blobs = {path: self.repo.create_blob(orjson.dumps(data, option=orjson.OPT_INDENT_2))}
         tree_oid, count = insert_blobs(self.repo, index_tree, blobs)
