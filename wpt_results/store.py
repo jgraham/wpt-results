@@ -442,7 +442,7 @@ def get_pushlog(
         try:
             resp = httpx.get(url)
         except httpx.ReadTimeout:
-            wait_time = 2**(count + 1)
+            wait_time = 15 * 2**count
             logging.warning(f"Request timed out, waiting {wait_time}s")
             if count < 5:
                 time.sleep(wait_time)
