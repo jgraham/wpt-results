@@ -8,13 +8,13 @@ cd "$SCRIPT_DIR"/..
 REPO_DIR="$PWD/wpt-results"
 
 if [[ ! -e $REPO_DIR ]]; then
-    mkdir $REPO_DIR
-    git init $REPO_DIR
+    git clone --bare https://github.com/jgraham/gecko-results-cache.git $REPO_DIR
 fi
 
 cd $REPO_DIR
 git config user.email "wpt-results@mozilla.bugs"
 git config user.name "wpt-results-bot"
+git fetch '+refs/runs/*:refs/runs/*'
 cd ..
 
 uv run wpt-store-results --git-repo wpt-results --log-level debug --backfill=new
