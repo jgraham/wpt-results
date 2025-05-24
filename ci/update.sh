@@ -18,7 +18,7 @@ git config user.name "wpt-results-bot"
 git fetch "$REMOTE_REPO" '+refs/runs/*:refs/runs/*'
 cd ..
 
-uv run wpt-store-results --git-repo wpt-results --log-level debug --backfill=new
+uv run wpt-store-results --git-repo wpt-results --log-level debug
 
 cd $REPO_DIR
 git status
