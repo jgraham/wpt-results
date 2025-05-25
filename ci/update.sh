@@ -21,5 +21,4 @@ cd ..
 uv run wpt-store-results --git-repo wpt-results --log-level debug
 
 cd $REPO_DIR
-git status
 git push https://x-access-token:${GITHUB_TOKEN}@github.com/jgraham/gecko-results-cache.git '+refs/runs/*:refs/runs/*'
