@@ -21,6 +21,7 @@ dependencies = [
     "tcfetch==0.5.1",
     "zstandard==0.25.0",
 ]
+requires-python = "==3.13"
 
 [project.optional-dependencies]
 test = [
