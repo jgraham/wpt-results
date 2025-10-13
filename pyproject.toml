@@ -19,7 +19,7 @@ dependencies = [
     "orjson>=3.10.15",
     "pygit2==1.17.0",
     "tcfetch==0.5.1",
-    "zstandard==0.23.0",
+    "zstandard==0.25.0",
 ]
 
 [project.optional-dependencies]
