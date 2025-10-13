@@ -16,10 +16,10 @@ classifiers = [
 ]
 dependencies = [
     "httpx==0.28.1",
-    "orjson>=3.10.15",
-    "pygit2==1.17.0",
+    "orjson>=3.11.3",
+    "pygit2==1.18.2",
     "tcfetch==0.5.1",
-    "zstandard==0.23.0",
+    "zstandard==0.25.0",
 ]
 
 [project.optional-dependencies]
