@@ -17,7 +17,7 @@ classifiers = [
 dependencies = [
     "httpx==0.28.1",
     "orjson>=3.11.3",
-    "pygit2==1.18.2",
+    "pygit2==1.19.0",
     "tcfetch==0.5.1",
     "zstandard==0.25.0",
 ]
