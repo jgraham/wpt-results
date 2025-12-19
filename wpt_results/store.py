@@ -511,10 +511,13 @@ def get_latest_commit(branch: str) -> Optional[tuple[str, dict[str, Any]]]:
     pushes = sorted([item for item in push_data.keys()], key=lambda x: -int(x))
     for push in pushes:
         commit = push_data[push]["changesets"][-1]
-        if tcfetch.check_complete(branch, commit):
-            return commit, push_data[push]
-        else:
-            logging.info(f"{commit} is not complete")
+        try:
+            if tcfetch.check_complete(branch, commit):
+                return commit, push_data[push]
+            else:
+                logging.info(f"{commit} is not complete")
+        except OSError:
+            logging.warning(f"Failed to get taskgraph data for {commit}")
     return None
 
 
