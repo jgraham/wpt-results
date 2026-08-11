@@ -18,7 +18,7 @@ dependencies = [
     "httpx==0.28.1",
     "orjson>=3.11.3",
     "pygit2==1.20.0",
-    "tcfetch==0.5.1",
+    "tcfetch==0.5.2",
     "zstandard==0.25.0",
 ]
 requires-python = "==3.13.*"
